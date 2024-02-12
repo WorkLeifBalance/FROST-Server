@@ -19,6 +19,8 @@ spec:
       app: {{ include "frost-server.name" . }}
       component: {{ $tier }}
   replicas: {{ .Values.frost.mqtt.replicas }}
+  strategy:
+    type: {{ .Values.frost.mqtt.updateStrategy }}
   template:
     metadata:
       labels:
@@ -28,6 +30,10 @@ spec:
         app: {{ include "frost-server.name" . }}
         component: {{ $tier }}
     spec:
+      imagePullSecrets:
+      {{- range $pulls := .Values.global.imagePullSecrets }}
+      - name: {{ $pulls }}
+      {{- end }}
       containers:
         - name: {{ $fullName }}
           image: "{{ .Values.frost.mqtt.image.registry }}/{{ .Values.frost.mqtt.image.repository }}:{{ .Values.frost.mqtt.image.tag }}"
@@ -37,6 +43,16 @@ spec:
               containerPort: 1883
             - name: websocket
               containerPort: 9876
+          livenessProbe:
+            httpGet:
+              path: /
+              port: mqtt
+          readinessProbe:
+            httpGet:
+              path: /
+              port: mqtt
+          resources:
+            {{- toYaml .Values.frost.mqtt.resources | nindent 12 }}
           env:
             # Internal properties
             - name: serviceRootUrl

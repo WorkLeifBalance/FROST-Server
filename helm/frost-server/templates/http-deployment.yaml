@@ -18,6 +18,8 @@ spec:
       app: {{ include "frost-server.name" . }}
       component: {{ $tier }}
   replicas: {{ .Values.frost.http.replicas }}
+  strategy:
+    type: {{ .Values.frost.http.updateStrategy }}
   template:
     metadata:
       labels:
@@ -27,6 +29,10 @@ spec:
         app: {{ include "frost-server.name" . }}
         component: {{ $tier }}
     spec:
+      imagePullSecrets:
+      {{- range $pulls := .Values.global.imagePullSecrets }}
+      - name: {{ $pulls }}
+      {{- end }}
       containers:
         - name: {{ $fullName }}
           image: "{{ .Values.frost.http.image.registry }}/{{ .Values.frost.http.image.repository }}:{{ .Values.frost.http.image.tag }}"
@@ -36,6 +42,14 @@ spec:
               containerPort: 8080
           resources:
           {{- toYaml .Values.frost.http.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: tomcat
+          readinessProbe:
+            httpGet:
+              path: /
+              port: tomcat
           env:
             # Internal properties
             - name: serviceRootUrl

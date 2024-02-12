@@ -1,6 +1,13 @@
 # If empty, use the chart name as common base name for any FROST-Server Kubernetes component
 name:
 
+
+  ######################################
+  # Global settings                    #
+  ######################################
+global:
+  imagePullSecrets: []
+
 frost:
   ######################################
   # FROST-Server general configuration #
@@ -253,6 +260,20 @@ frost:
         enabled: false
         secretName:
 
+    # Container resources
+    resources:
+      limits: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 1Gi
+      requests: {}
+      # requests:
+      #  cpu: 500m
+      #  memory: 1Gi
+    
+    # Kubernets update strategy
+    updateStrategy: "RollingUpdate" 
+
   ##############################################
   # FROST-Server Database module configuration #
   ##############################################
@@ -296,6 +317,20 @@ frost:
       runAsUser:
       runAsGroup:
       fsGroup:
+    
+    # Container resources
+    resources:
+      limits: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 1Gi
+      requests: {}
+      # requests:
+      #  cpu: 500m
+      #  memory: 1Gi
+    
+    # Kubernets update strategy
+    updateStrategy: "RollingUpdate" 
 
   ##############################################
   # FROST-Server Backup module configuration #
@@ -341,3 +376,17 @@ frost:
     implementationClass: "de.fraunhofer.iosb.ilt.sta.messagebus.MqttMessageBus"
     topicName: "FROST-Bus"
     qos: 2
+
+    # Container resources
+    resources:
+      limits: {}
+      # limits:
+      #   cpu: 1000m
+      #   memory: 1Gi
+      requests: {}
+      # requests:
+      #  cpu: 500m
+      #  memory: 1Gi
+    
+    # Kubernets update strategy
+    updateStrategy: "RollingUpdate" 

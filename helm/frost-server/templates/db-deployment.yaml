@@ -18,6 +18,8 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
       app: {{ include "frost-server.name" . }}
       component: {{ $tier }}
+  strategy:
+    type: {{ .Values.frost.db.updateStrategy }}
   template:
     metadata:
       labels:
@@ -27,6 +29,10 @@ spec:
         app: {{ include "frost-server.name" . }}
         component: {{ $tier }}
     spec:
+      imagePullSecrets:
+      {{- range $pulls := .Values.global.imagePullSecrets }}
+      - name: {{ $pulls }}
+      {{- end }}
       {{- if .Values.frost.db.requiredHostname }}
       affinity:
         nodeAffinity:
@@ -69,6 +75,18 @@ spec:
                 secretKeyRef:
                   name: {{ include "frost-server.db.secret" . }}
                   key: {{ .Values.frost.db.secretPasswordKey }}
+          livenessProbe:
+            tcpSocket:
+              port: postgresql
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          readinessProbe:
+            tcpSocket:
+              port: postgresql
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.frost.db.resources | nindent 12 }}
       {{- if .Values.frost.db.persistence.enabled }}
       volumes:
         - name: {{ $fullName }}
