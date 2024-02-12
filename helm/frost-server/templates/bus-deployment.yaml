@@ -41,13 +41,15 @@ spec:
             - name: mqtt
               containerPort: 1883
           livenessProbe:
-            httpGet:
-              path: /
-              port: mqtt
+            tcpSocket:
+              port: 1883
+            initialDelaySeconds: 15
+            periodSeconds: 15
           readinessProbe:
-            httpGet:
-              path: /
-              port: mqtt
+            tcpSocket:
+              port: 1883
+            initialDelaySeconds: 15
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.frost.bus.resources | nindent 12 }}
 

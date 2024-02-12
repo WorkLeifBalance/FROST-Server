@@ -300,6 +300,8 @@ frost:
       capacity: 10Gi
       mountPath: /var/lib/postgresql/data
       hostPath:
+    # Postgres data dir for init script (see pg docs)  
+      pgdata:
     requiredHostname:
 
     # Common FROST-Server Database properties, shared by any other FROST-Server modules

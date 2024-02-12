@@ -44,12 +44,12 @@ spec:
           {{- toYaml .Values.frost.http.resources | nindent 12 }}
           livenessProbe:
             httpGet:
-              path: /
-              port: tomcat
+              path: /FROST-Server
+              port: 8080
           readinessProbe:
             httpGet:
-              path: /
-              port: tomcat
+              path: /FROST-Server
+              port: 8080
           env:
             # Internal properties
             - name: serviceRootUrl

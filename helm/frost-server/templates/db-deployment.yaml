@@ -75,14 +75,18 @@ spec:
                 secretKeyRef:
                   name: {{ include "frost-server.db.secret" . }}
                   key: {{ .Values.frost.db.secretPasswordKey }}
+            {{- if .Values.frost.db.persistence.pgdata }}
+            - name: PGDATA
+              value: {{ .Values.frost.db.persistence.pgdata}}
+            {{- end }}
           livenessProbe:
             tcpSocket:
-              port: postgresql
+              port: 5432
             initialDelaySeconds: 15
             periodSeconds: 15
           readinessProbe:
             tcpSocket:
-              port: postgresql
+              port: 5432
             initialDelaySeconds: 15
             periodSeconds: 10
           resources:
