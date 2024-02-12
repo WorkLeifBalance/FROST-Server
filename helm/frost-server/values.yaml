@@ -141,7 +141,9 @@ frost:
       requests:
         cpu: 500m
         memory: 1Gi
-
+    
+    # Kubernets update strategy
+    updateStrategy: "RollingUpdate" 
 
     # FROST-Server HTTP business settings
     serviceHost: frost-server
