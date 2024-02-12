@@ -18,6 +18,8 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
       app: {{ include "frost-server.name" . }}
       component: {{ $tier }}
+  strategy:
+    type: {{ .Values.frost.bus.updateStrategy }}
   template:
     metadata:
       labels:
@@ -27,6 +29,10 @@ spec:
         app: {{ include "frost-server.name" . }}
         component: {{ $tier }}
     spec:
+      imagePullSecrets:
+      {{- range $pulls := .Values.global.imagePullSecrets }}
+      - name: {{ $pulls }}
+      {{- end }}
       containers:
         - name: {{ $fullName }}
           image: "{{ .Values.frost.bus.image.registry }}/{{ .Values.frost.bus.image.repository }}:{{ .Values.frost.bus.image.tag }}"
@@ -34,4 +40,15 @@ spec:
           ports:
             - name: mqtt
               containerPort: 1883
+          livenessProbe:
+            httpGet:
+              path: /
+              port: mqtt
+          readinessProbe:
+            httpGet:
+              path: /
+              port: mqtt
+          resources:
+            {{- toYaml .Values.frost.bus.resources | nindent 12 }}
+
 {{- end -}}
